@@ -33,8 +33,6 @@ async def on_ready():
     print(f'{bot.user} has connected to Discord!')
     for guild in bot.guilds:
         await guild.me.edit(nick=None)
-        print(f'{bot.user} is connected to the following guild:\n'
-              f'{guild.name}(id: {guild.id})')
     await bot.change_presence(activity=discord.Game('%help (coming soon)'))
     await status_update()
 
