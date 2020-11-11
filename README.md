@@ -6,20 +6,20 @@ Simple bot for displaying whether or not a Minecraft server is online at a given
 
 Prefix: %
 
-setDefaultServer
+# setDefaultServer
 
-   Syntax:
+   **Syntax:**
 %setDefaultServer [server ip] [port]
 
-   Usage:
+   **Usage:**
 Sets the server whose status will be tracked for the discord server the command is run in.
 
 # status
 
-   Syntax:
+   **Syntax:**
 %status
 
-   Usage:
+   **Usage:**
 Displays the online status of the default server and how many players are currently connected.
 
 # help
