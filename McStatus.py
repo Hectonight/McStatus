@@ -89,9 +89,10 @@ async def serverStatus(ctx, address, port='25565'):
     except:
             await ctx.channel.send('`{}` is offline'.format(address))
 
+
 # add a role that can use the bot
 @bot.command()
-async def addRoleBotPermissions(ctx, role: discord.Role):
+async def addBotPerms(ctx, role: discord.Role):
     if ctx.guild not in bot_permissions:
         bot_permissions[ctx.guild] = []
     if ctx.author.guild_permissions.administrator and role not in bot_permissions[ctx.guild]:
@@ -104,9 +105,10 @@ async def addRoleBotPermissions(ctx, role: discord.Role):
     else:
         await ctx.channel.send('Role `{}` already has bot permissions'.format(role.name))
 
+
 # remove a roll that can use the bot
 @bot.command()
-async def removeRoleBotPermissions(ctx, role: discord.Role):
+async def removeBotPerms(ctx, role: discord.Role):
     if ctx.guild not in bot_permissions:
         bot_permissions[ctx.guild] = []
     if ctx.author.guild_permissions.administrator and role in bot_permissions[ctx.guild]:
@@ -117,15 +119,17 @@ async def removeRoleBotPermissions(ctx, role: discord.Role):
     else:
         await ctx.channel.send('Role `{}` does not have bot permissions'.format(role.name))
 
+
 # if a role gets deleted, delete from the list of roles that can use the bot
 @bot.event
 async def on_guild_role_delete(ctx, role):
     if role in bot_permissions[ctx.guild]:
         bot_permissions[ctx.guild].remove(role)
 
+
 # list the roles
 @bot.command()
-async def listRoleBotPermissions(ctx):
+async def listBotPerms(ctx):
     if ctx.guild not in bot_permissions:
         bot_permissions[ctx.guild] = []
     if bot_permissions[ctx.guild]:
