@@ -89,7 +89,7 @@ async def removeDefaultServer(ctx):
         if ctx.guild in mc_servers:
             await ctx.guild.me.edit(nick=None)
             del mc_servers[ctx.guild]
-            await ctx.channel.send('Sever set to None')
+            await ctx.channel.send('Server set to None')
         else:
             await ctx.channel.send(server_not_set)
     else:
