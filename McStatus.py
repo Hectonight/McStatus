@@ -71,7 +71,7 @@ async def status(ctx):
 @bot.command()
 async def setDefaultServer(ctx, address, port='25565'):
     if ctx.author.guild_permissions.administrator \
-        or not set(ctx.author.roles).isdisjoint(set(bot_permissions[ctx].guild)):
+        or not set(ctx.author.roles).isdisjoint(set(bot_permissions[ctx.guild])):
 
         server = MinecraftServer.lookup('{}:{}'.format(address, port))
         mc_servers[ctx.guild] = [address, port, server]
@@ -84,7 +84,7 @@ async def setDefaultServer(ctx, address, port='25565'):
 @bot.command()
 async def removeDefaultServer(ctx):
     if ctx.author.guild_permissions.administrator \
-        or not set(ctx.author.roles).isdisjoint(set(bot_permissions[ctx].guild)):
+        or not set(ctx.author.roles).isdisjoint(set(bot_permissions[ctx.guild])):
 
         if ctx.guild in mc_servers:
             await ctx.guild.me.edit(nick=None)
