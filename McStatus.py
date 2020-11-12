@@ -4,7 +4,7 @@ from discord.ext import commands
 from mcstatus import MinecraftServer
 
 intents = discord.Intents.all()
-bot = commands.Bot(command_prefix='%', intents=intents)
+bot = commands.Bot(command_prefix='%', help_command=None, intents=intents)
 
 bot_permissions = {}
 mc_servers = {}
@@ -34,6 +34,23 @@ async def on_ready():
         await guild.me.edit(nick=None)
     await bot.change_presence(activity=discord.Game('%help BETA'))
     await status_update()
+
+
+# the help command
+@bot.command()
+async def help(ctx):
+    halp = discord.Embed(title='Help Commands', color=discord.Color.blue())
+    halp.add_field(name="%help`", value="Show a list of all commands", inline=False)
+    halp.add_field(name="`%serverStatus <address> [port=25565]`", value="", inline=False)
+    halp.add_field(name="`%status`", value="Displays the status of the default server", inline=False)
+    halp.add_field(name="`%setDefaultServer <address> [port=25565]`", value="Sets the default server", inline=False)
+    halp.add_field(name="`%removeDefaultServer`", value="Sets the default server to none", inline=False)
+    halp.add_field(name="`%listBotPerms`", value="Lists roles that have permissions to use the bot", inline=False)
+    halp.add_field(name="`%addBotPerms <role>`", value="Allows a role the permissions to use the bot",
+                   inline=False)
+    halp.add_field(name="`%removeBotPerms <role>`", value="Removes a permission for a role to use the bot", inline=False)
+    await ctx.channel.send(embed=halp)
+
 
 
 # status of the mc server
