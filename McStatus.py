@@ -40,7 +40,7 @@ async def on_ready():
 @bot.command()
 async def help(ctx):
     halp = discord.Embed(title='Help Commands', color=discord.Color.blue())
-    halp.add_field(name="%help`", value="Show a list of all commands", inline=False)
+    halp.add_field(name="`%help`", value="Show a list of all commands", inline=False)
     halp.add_field(name="`%serverStatus <address> [port=25565]`", value="Displays the status of a server", inline=False)
     halp.add_field(name="`%status`", value="Displays the status of the default server", inline=False)
     halp.add_field(name="`%setDefaultServer <address> [port=25565]`", value="Sets the default server", inline=False)
