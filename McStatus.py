@@ -21,9 +21,15 @@ def load_obj(name):
     with open('obj/' + name + '.pkl', 'rb') as f:
         return pickle.load(f)
 
+try:
+    bot_perms = load_obj('bot_perms')
+except:
+    bot_perms = {}
 
-bot_perms = load_obj('bot_perms')
-mc_servers = load_obj('mc_servers')
+try:
+    mc_servers = load_obj('mc_servers')
+except:
+    mc_servers = {}
 
 
 
