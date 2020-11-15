@@ -44,9 +44,9 @@ async def status_update():
         save_obj(bot_perms, 'bot_perms')
         save_obj(mc_servers, 'mc_servers')
         for guild in bot.guilds:
-            if guild in mc_servers:
+            if guild.id in mc_servers:
                 try:
-                    mc_servers[guild][2].status()
+                    mc_servers[guild.id][2].status()
                     await guild.me.edit(nick='ONLINE')
                 except:
                     await guild.me.edit(nick='OFFLINE')
@@ -96,8 +96,10 @@ async def status(ctx):
 # set the default minecraft server for the guild
 @bot.command(pass_context=True, aliases=['setserver', 'SetServer'])
 async def setServer(ctx, address, port='25565'):
+    if ctx.guild.id not in bot_perms:
+        bot_perms[ctx.guild.id] = []
     if ctx.author.guild_permissions.administrator \
-            or not set(ctx.author.roles.id).isdisjoint(set(bot_perms[ctx.guild.id])):
+            or not set(ctx.author.roles).isdisjoint(set(bot_perms[ctx.guild.id])):
 
         server = MinecraftServer.lookup('{}:{}'.format(address, port))
         mc_servers[ctx.guild.id] = [address, port, server]
@@ -155,7 +157,7 @@ async def removeBotPerms(ctx, role: discord.Role):
     if ctx.guild.id not in bot_perms:
         bot_perms[ctx.guild.id] = []
     if ctx.author.guild_permissions.administrator and role.id in bot_perms[ctx.guild.id]:
-        bot_perms[ctx.guild.id].append(role.id)
+        bot_perms[ctx.guild.id].remove(role.id)
         await ctx.channel.send('Role `{}` no longer has bot permissions'.format(role.name))
     elif not ctx.author.guild_permissions.administrator:
         await ctx.channel.send(no_perm)
