@@ -9,6 +9,9 @@ from dotenv import load_dotenv
 intents = discord.Intents.all()
 bot = commands.Bot(command_prefix='%', help_command=None, intents=intents)
 
+# in github there is a hidden .env file that only contributors can see
+# this is due to this env file containing the bot token which will not be public
+# if someone were to get a hold of the bot token they can hijack the bot
 load_dotenv()
 token = os.getenv('TOKEN')
 
@@ -186,6 +189,25 @@ async def listBotPerms(ctx):
         await ctx.channel.send(embed=lRBP)
     else:
         await ctx.channel.send('This server does not have any roles with bot permissions')
+
+
+# list the players online up to 30 players
+@bot.command(pass_context=True, aliases=['PlayersOnline', 'playersonline'])
+async def playersOnline(ctx):
+    if ctx.guild.id in mc_servers:
+        players_online = discord.Embed(title='Players Online', color=discord.Color.blue)
+        players_str = ''
+        server_query = mc_servers[ctx.guild.id][2].query()
+        online_players = server_query.players.names
+        if len(online_players) > 30:
+            online_players = online_players[:29]
+        for player in online_players:
+            players_str += '\n' + player
+        players_online.add_field(name='Players:', value=players_str)
+        await ctx.channel.send(embed=players_online)
+    else:
+        await ctx.channel.send(server_not_set)
+
 
 
 
