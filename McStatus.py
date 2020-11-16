@@ -9,9 +9,7 @@ from dotenv import load_dotenv
 intents = discord.Intents.all()
 bot = commands.Bot(command_prefix='%', help_command=None, intents=intents)
 
-# in github there is a hidden .env file that only contributors can see
-# this is due to this env file containing the bot token which will not be public
-# if someone were to get a hold of the bot token they can hijack the bot
+
 load_dotenv()
 token = os.getenv('TOKEN')
 
@@ -133,7 +131,8 @@ async def serverStatus(ctx, address, port='25565'):
     server = MinecraftServer.lookup('{}:{}'.format(address, port))
     try:
         status_server = server.status()
-        await ctx.channel.send('`{}` is online with {} players'.format(address, status_server.players.online))
+        await ctx.channel.send('`{}` is online with {}/{} players'.format(address, status_server.players.online,
+                                                                                   status_server.players.max))
     except:
         await ctx.channel.send('`{}` is offline'.format(address))
 
@@ -195,10 +194,14 @@ async def listBotPerms(ctx):
 @bot.command(pass_context=True, aliases=['PlayersOnline', 'playersonline'])
 async def playersOnline(ctx):
     if ctx.guild.id in mc_servers:
+        try:
+            server_status = mc_servers[ctx.guild.id][2].status()
+        except:
+            await ctx.channel.send('The server is not online')
+            return
         players_online = discord.Embed(title='Players Online', color=discord.Color.blue())
         players_str = ''
-        server_query = mc_servers[ctx.guild.id][2].query()
-        online_players = server_query.players.names
+        online_players = [user['name'] for user in server_status.raw['players']['sample']]
         if len(online_players) > 30:
             online_players = online_players[:29]
         for player in online_players:
