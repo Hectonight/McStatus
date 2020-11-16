@@ -195,7 +195,7 @@ async def listBotPerms(ctx):
 @bot.command(pass_context=True, aliases=['PlayersOnline', 'playersonline'])
 async def playersOnline(ctx):
     if ctx.guild.id in mc_servers:
-        players_online = discord.Embed(title='Players Online', color=discord.Color.blue)
+        players_online = discord.Embed(title='Players Online', color=discord.Color.blue())
         players_str = ''
         server_query = mc_servers[ctx.guild.id][2].query()
         online_players = server_query.players.names
