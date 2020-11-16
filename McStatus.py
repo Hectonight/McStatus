@@ -216,6 +216,4 @@ async def playersOnline(ctx):
 
 
 
-
-
 bot.run(token)
