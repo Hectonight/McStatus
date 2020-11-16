@@ -70,6 +70,7 @@ async def help(ctx):
     halp.add_field(name="`%help`", value="Show a list of all commands", inline=False)
     halp.add_field(name="`%serverStatus <address> [port=25565]`", value="Displays the status of a server", inline=False)
     halp.add_field(name="`%status`", value="Displays the status of the default server", inline=False)
+    halp.add_field(name="`%playersOnline`", value="Lists the players online on the default server", inline=False)
     halp.add_field(name="`%setDefaultServer <address> [port=25565]`", value="Sets the default server", inline=False)
     halp.add_field(name="`%removeDefaultServer`", value="Sets the default server to none", inline=False)
     halp.add_field(name="`%listBotPerms`", value="Lists roles that have permissions to use the bot", inline=False)
