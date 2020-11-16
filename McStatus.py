@@ -94,6 +94,7 @@ async def status(ctx):
         await ctx.channel.send(server_not_set)
 
 
+
 # set the default minecraft server for the guild
 @bot.command(pass_context=True, aliases=['setserver', 'SetServer'])
 async def setServer(ctx, address, port='25565'):
