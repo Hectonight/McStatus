@@ -86,8 +86,9 @@ async def status(ctx):
     if ctx.guild.id in mc_servers:
         try:
             status_server = mc_servers[ctx.guild.id][2].status()
-            await ctx.channel.send('`{}` is online with {} players'.format(mc_servers[ctx.guild.id][0],
-                                                                           status_server.players.online))
+            await ctx.channel.send('`{}` is online with {}/{} players'.format(mc_servers[ctx.guild.id][0],
+                                                                           status_server.players.online,
+                                                                           status_server.players.max))
         except:
             await ctx.channel.send('`{}` is offline'.format(mc_servers[ctx.guild.id][0]))
     else:
