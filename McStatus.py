@@ -32,6 +32,11 @@ try:
 except:
     mc_servers = {}
 
+try:
+    toggle_nick = load_obj('toggle_nick')
+except:
+    toggle_nick = {}
+
 
 
 server_not_set = 'A Minecraft Server Has not Been Set'
@@ -42,15 +47,20 @@ no_perm = 'Insufficient Permissions'
 async def status_update():
     while True:
         await asyncio.sleep(3)
-        save_obj(bot_perms, 'bot_perms')
-        save_obj(mc_servers, 'mc_servers')
         for guild in bot.guilds:
-            if guild.id in mc_servers:
+            if guild.id not in toggle_nick:
+                toggle_nick[guild.id] = False
+            if guild.id in mc_servers and toggle_nick[guild.id]:
                 try:
                     mc_servers[guild.id][2].status()
                     await guild.me.edit(nick='ONLINE')
                 except:
                     await guild.me.edit(nick='OFFLINE')
+
+        save_obj(bot_perms, 'bot_perms')
+        save_obj(mc_servers, 'mc_servers')
+        save_obj(toggle_nick, 'toggle_nick')
+
 
 
 # on event bot is ready
@@ -73,10 +83,13 @@ async def help(ctx):
     halp.add_field(name="`%playersOnline`", value="Lists the players online on the default server", inline=False)
     halp.add_field(name="`%setDefaultServer <address> [port=25565]`", value="Sets the default server", inline=False)
     halp.add_field(name="`%removeDefaultServer`", value="Sets the default server to none", inline=False)
-    halp.add_field(name="`%listBotPerms`", value="Lists roles that have permissions to use the bot", inline=False)
-    halp.add_field(name="`%addBotPerms <role>`", value="Allows a role the permissions to use the bot",
+    halp.add_field(name="`%toggleNick`", value="Toggles whether the nick of the bot will become online and offline",
                    inline=False)
-    halp.add_field(name="`%removeBotPerms <role>`", value="Removes a permission for a role to use the bot", inline=False)
+    halp.add_field(name="`%listBotPerms`", value="Lists roles that have permissions to use the bot", inline=False)
+    halp.add_field(name="`%addBotPerms <role>`",
+                   value="Allows a role the permissions to use the admin commands of the bot", inline=False)
+    halp.add_field(name="`%removeBotPerms <role>`",
+                   value="Removes the permission for a role to use the admin commands of the bot ", inline=False)
     await ctx.channel.send(embed=halp)
 
 
@@ -98,7 +111,7 @@ async def status(ctx):
 
 
 # set the default minecraft server for the guild
-@bot.command(pass_context=True, aliases=['setserver', 'SetServer'])
+@bot.command(pass_context=True, aliases=['setserver', 'SetServer', 'Setserver'])
 async def setServer(ctx, address, port='25565'):
     if ctx.guild.id not in bot_perms:
         bot_perms[ctx.guild.id] = []
@@ -113,7 +126,7 @@ async def setServer(ctx, address, port='25565'):
 
 
 # remove the default minecraft server for the guild
-@bot.command(pass_context=True, aliases=['removeserver', 'RemoveServer'])
+@bot.command(pass_context=True, aliases=['removeserver', 'RemoveServer', 'Removeserver'])
 async def removeServer(ctx):
     if ctx.author.guild_permissions.administrator \
             or not set(ctx.author.roles.id).isdisjoint(set(bot_perms[ctx.guild.id])):
@@ -129,7 +142,7 @@ async def removeServer(ctx):
 
 
 # status of mc server of user choice
-@bot.command(pass_context=True, aliases=['serverstatus', 'ServerStatus'])
+@bot.command(pass_context=True, aliases=['serverstatus', 'ServerStatus', 'Serverstatus'])
 async def serverStatus(ctx, address, port='25565'):
     server = MinecraftServer.lookup('{}:{}'.format(address, port))
     try:
@@ -157,7 +170,7 @@ async def addBotPerms(ctx, role: discord.Role):
 
 
 # remove a roll that can use the bot
-@bot.command(pass_context=True, aliases=['removebotperms', 'RemoveBotPerms'])
+@bot.command(pass_context=True, aliases=['removebotperms', 'RemoveBotPerms', 'Removebotperms'])
 async def removeBotPerms(ctx, role: discord.Role):
     if ctx.guild.id not in bot_perms:
         bot_perms[ctx.guild.id] = []
@@ -178,7 +191,7 @@ async def on_guild_role_delete(ctx, role):
 
 
 # list the roles
-@bot.command(pass_context=True, aliases=['ListBotPerms', 'listbotperms'])
+@bot.command(pass_context=True, aliases=['ListBotPerms', 'listbotperms', 'Listbotperms'])
 async def listBotPerms(ctx):
     if ctx.guild.id not in bot_perms:
         bot_perms[ctx.guild.id] = []
@@ -194,7 +207,7 @@ async def listBotPerms(ctx):
 
 
 # list the players online up to 30 players
-@bot.command(pass_context=True, aliases=['PlayersOnline', 'playersonline'])
+@bot.command(pass_context=True, aliases=['PlayersOnline', 'playersonline', 'Playersonline'])
 async def playersOnline(ctx):
     if ctx.guild.id in mc_servers:
         try:
@@ -209,11 +222,28 @@ async def playersOnline(ctx):
             online_players = online_players[:29]
         for player in online_players:
             players_str += '\n' + player
-        players_online.add_field(name='Players:', value=players_str)
+        players_online.add_field(name='{}/{} Players'.format(server_status.players.online, server_status.players.max),
+                                                                                           value=players_str)
         await ctx.channel.send(embed=players_online)
     else:
         await ctx.channel.send(server_not_set)
 
+
+# toggles the nick function for the guild
+@bot.command(pass_context=True, aliases=['togglenick', 'ToggleNick', 'Togglenick'])
+async def toggleNick(ctx):
+    if ctx.author.guild_permissions.administrator \
+            or not set(ctx.author.roles.id).isdisjoint(set(bot_perms[ctx.guild.id])):
+        if ctx.guild.id not in toggle_nick:
+             toggle_nick[ctx.guild.id] = True
+        elif toggle_nick[ctx.guild.id]:
+             toggle_nick[ctx.guild.id] = False
+        else:
+             toggle_nick[ctx.guild.id] = True
+        await ctx.channel.send('Set Toggle Nick to {}'.format(toggle_nick[ctx.guild.id]))
+
+    else:
+        await ctx.channel.send(no_perm)
 
 
 bot.run(token)
