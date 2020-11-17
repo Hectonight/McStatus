@@ -1,6 +1,7 @@
 # McStatus
  
-Simple bot for displaying whether or not a Minecraft server is online at a given time. Can also display the number of players currently connected to the server. 
+Simple bot for displaying whether or not a Minecraft server is online at a given time. Can also display the number of 
+players currently connected to the server. 
 
 # Command Usage: 
 
@@ -69,7 +70,7 @@ Toggles whether the nick of the bot will become online and offline
    **Usage:**
 List what roles have the bot's admin commands
 
-# addBotPerms 
+# AddBotPerms 
 
    **Syntax:**
 %addBotPerms &lt;role&gt;
