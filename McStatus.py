@@ -116,7 +116,7 @@ async def setServer(ctx, address, port='25565'):
     if ctx.guild.id not in bot_perms:
         bot_perms[ctx.guild.id] = []
     if ctx.author.guild_permissions.administrator \
-            or not set(ctx.author.roles).isdisjoint(set(bot_perms[ctx.guild.id])):
+            or not set([role.id for role in ctx.author.roles]).isdisjoint(set(bot_perms[ctx.guild.id])):
 
         server = MinecraftServer.lookup('{}:{}'.format(address, port))
         mc_servers[ctx.guild.id] = [address, port, server]
@@ -129,7 +129,7 @@ async def setServer(ctx, address, port='25565'):
 @bot.command(pass_context=True, aliases=['removeserver', 'RemoveServer', 'Removeserver'])
 async def removeServer(ctx):
     if ctx.author.guild_permissions.administrator \
-            or not set(ctx.author.roles).isdisjoint(set(bot_perms[ctx.guild.id])):
+            or not set([role.id for role in ctx.author.roles]).isdisjoint(set(bot_perms[ctx.guild.id])):
 
         if ctx.guild.id in mc_servers:
             await ctx.guild.me.edit(nick=None)
@@ -233,7 +233,7 @@ async def playersOnline(ctx):
 @bot.command(pass_context=True, aliases=['togglenick', 'ToggleNick', 'Togglenick'])
 async def toggleNick(ctx):
     if ctx.author.guild_permissions.administrator \
-            or not set(ctx.author.roles).isdisjoint(set(bot_perms[ctx.guild.id])):
+            or not set([role.id for role in ctx.author.roles]).isdisjoint(set(bot_perms[ctx.guild.id])):
         if ctx.guild.id not in toggle_nick:
              toggle_nick[ctx.guild.id] = True
         elif toggle_nick[ctx.guild.id]:
