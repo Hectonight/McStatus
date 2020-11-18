@@ -9,7 +9,6 @@ from dotenv import load_dotenv
 intents = discord.Intents.all()
 bot = commands.Bot(command_prefix='%', help_command=None, intents=intents)
 
-
 load_dotenv()
 token = os.getenv('TOKEN')
 
@@ -18,9 +17,11 @@ def save_obj(obj, name):
     with open('obj/' + name + '.pkl', 'wb') as f:
         pickle.dump(obj, f, pickle.HIGHEST_PROTOCOL)
 
+
 def load_obj(name):
     with open('obj/' + name + '.pkl', 'rb') as f:
         return pickle.load(f)
+
 
 try:
     bot_perms = load_obj('bot_perms')
@@ -36,8 +37,6 @@ try:
     toggle_nick = load_obj('toggle_nick')
 except:
     toggle_nick = {}
-
-
 
 server_not_set = 'A Minecraft Server Has not Been Set'
 no_perm = 'Insufficient Permissions'
@@ -66,8 +65,6 @@ async def bot_alive():
     while True:
         await asyncio.sleep(1200)
         print('Keep bot alive')
-
-
 
 
 # on event bot is ready
@@ -101,7 +98,6 @@ async def help(ctx):
     await ctx.channel.send(embed=halp)
 
 
-
 # status of the mc server
 @bot.command(pass_context=True, aliases=['Status'])
 async def status(ctx):
@@ -109,13 +105,12 @@ async def status(ctx):
         try:
             status_server = mc_servers[ctx.guild.id][2].status()
             await ctx.channel.send('`{}` is online with {}/{} players'.format(mc_servers[ctx.guild.id][0],
-                                                                           status_server.players.online,
-                                                                           status_server.players.max))
+                                                                              status_server.players.online,
+                                                                              status_server.players.max))
         except:
             await ctx.channel.send('`{}` is offline'.format(mc_servers[ctx.guild.id][0]))
     else:
         await ctx.channel.send(server_not_set)
-
 
 
 # set the default minecraft server for the guild
@@ -156,7 +151,7 @@ async def serverStatus(ctx, address, port='25565'):
     try:
         status_server = server.status()
         await ctx.channel.send('`{}` is online with {}/{} players'.format(address, status_server.players.online,
-                                                                                   status_server.players.max))
+                                                                          status_server.players.max))
     except:
         await ctx.channel.send('`{}` is offline'.format(address))
 
@@ -231,7 +226,7 @@ async def playersOnline(ctx):
         for player in online_players:
             players_str += '\n' + player
         players_online.add_field(name='{}/{} Players'.format(server_status.players.online, server_status.players.max),
-                                                                                           value=players_str)
+                                 value=players_str)
         await ctx.channel.send(embed=players_online)
     else:
         await ctx.channel.send(server_not_set)
@@ -243,11 +238,11 @@ async def toggleNick(ctx):
     if ctx.author.guild_permissions.administrator \
             or not set([role.id for role in ctx.author.roles]).isdisjoint(set(bot_perms[ctx.guild.id])):
         if ctx.guild.id not in toggle_nick:
-             toggle_nick[ctx.guild.id] = True
+            toggle_nick[ctx.guild.id] = True
         elif toggle_nick[ctx.guild.id]:
-             toggle_nick[ctx.guild.id] = False
+            toggle_nick[ctx.guild.id] = False
         else:
-             toggle_nick[ctx.guild.id] = True
+            toggle_nick[ctx.guild.id] = True
         await ctx.channel.send('Set Toggle Nick to {}'.format(toggle_nick[ctx.guild.id]))
 
     else:
