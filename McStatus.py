@@ -46,6 +46,7 @@ no_perm = 'Insufficient Permissions'
 async def status_update():
     while True:
         await asyncio.sleep(3)
+        print('Staying Alive')
         for guild in bot.guilds:
             if guild.id not in toggle_nick:
                 toggle_nick[guild.id] = False
@@ -61,10 +62,7 @@ async def status_update():
         save_obj(toggle_nick, 'toggle_nick')
 
 
-async def bot_alive():
-    while True:
-        await asyncio.sleep(1200)
-        print('Keep bot alive')
+
 
 
 # on event bot is ready
@@ -75,7 +73,6 @@ async def on_ready():
         await guild.me.edit(nick=None)
     await bot.change_presence(activity=discord.Game('%help'))
     await status_update()
-    await bot_alive()
 
 
 # the help command
