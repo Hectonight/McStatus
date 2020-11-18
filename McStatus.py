@@ -62,9 +62,6 @@ async def status_update():
         save_obj(toggle_nick, 'toggle_nick')
 
 
-
-
-
 # on event bot is ready
 @bot.event
 async def on_ready():
