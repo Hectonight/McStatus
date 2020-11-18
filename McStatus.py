@@ -62,6 +62,13 @@ async def status_update():
         save_obj(toggle_nick, 'toggle_nick')
 
 
+async def bot_alive():
+    while True:
+        await asyncio.sleep(1200)
+        print('Keep bot alive')
+
+
+
 
 # on event bot is ready
 @bot.event
@@ -71,6 +78,7 @@ async def on_ready():
         await guild.me.edit(nick=None)
     await bot.change_presence(activity=discord.Game('%help'))
     await status_update()
+    await bot_alive()
 
 
 # the help command
