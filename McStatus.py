@@ -46,7 +46,6 @@ no_perm = 'Insufficient Permissions'
 async def status_update():
     while True:
         await asyncio.sleep(3)
-        print('Staying Alive')
         for guild in bot.guilds:
             if guild.id not in toggle_nick:
                 toggle_nick[guild.id] = False
