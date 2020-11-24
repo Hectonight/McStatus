@@ -211,16 +211,22 @@ async def playersOnline(ctx):
         except:
             await ctx.channel.send('The server is not online')
             return
-        players_online = discord.Embed(title='Players Online', color=discord.Color.blue())
-        players_str = ''
-        online_players = [user['name'] for user in server_status.raw['players']['sample']]
-        if len(online_players) > 30:
-            online_players = online_players[:29]
-        for player in online_players:
-            players_str += '\n' + player
-        players_online.add_field(name='{}/{} Players'.format(server_status.players.online, server_status.players.max),
-                                 value=players_str)
-        await ctx.channel.send(embed=players_online)
+        if server_status.players.online > 0:
+            players_online = discord.Embed(title='Players Online', color=discord.Color.blue())
+            players_str = ''
+            online_players = [user['name'] for user in server_status.raw['players']['sample']]
+            if len(online_players) > 30:
+                online_players = online_players[:29]
+            for player in online_players:
+                players_str += '\n' + player
+            players_online.add_field(name='{}/{} Players on {}'.format(server_status.players.online,
+                                                                       server_status.players.max,
+                                                                       mc_servers[ctx.guild.id][0]),
+                                     value=players_str)
+
+            await ctx.channel.send(embed=players_online)
+        else:
+            ctx.channel.send(f'There is nobody online on {mc_servers[ctx.guild.id][0]}')
     else:
         await ctx.channel.send(server_not_set)
 
