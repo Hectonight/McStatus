@@ -226,7 +226,7 @@ async def playersOnline(ctx):
 
             await ctx.channel.send(embed=players_online)
         else:
-            ctx.channel.send(f'There is nobody online on {mc_servers[ctx.guild.id][0]}')
+            await ctx.channel.send(f'There is nobody online on {mc_servers[ctx.guild.id][0]}')
     else:
         await ctx.channel.send(server_not_set)
 
