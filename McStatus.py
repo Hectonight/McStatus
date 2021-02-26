@@ -41,6 +41,21 @@ except:
 server_not_set = 'A Minecraft Server Has not Been Set'
 no_perm = 'Insufficient Permissions'
 
+halp = discord.Embed(title='Help Commands', color=discord.Color.blue())
+halp.add_field(name="`%help`", value="Show a list of all commands", inline=False)
+halp.add_field(name="`%status [address=DefaultServerAddress] [port=DefaultServerPort]`",
+               value="Displays the status of the default server or a specified server", inline=False)
+halp.add_field(name="`%playersOnline [address=DefaultServerAddress] [port=DefaultServerPort]`",
+               value="Lists the players online on the default server or a specified server", inline=False)
+halp.add_field(name="`%setServer <address> [port=25565]`", value="Sets the default server", inline=False)
+halp.add_field(name="`%removeServer`", value="Sets the default server to none", inline=False)
+halp.add_field(name="`%toggleNick`", value="Toggles whether the nick of the bot will become online and offline",
+                inline=False)
+halp.add_field(name="`%listBotPerms`", value="Lists roles that have permissions to use the bot", inline=False)
+halp.add_field(name="`%addBotPerms <role>`",
+                value="Allows a role the permissions to use the admin commands of the bot", inline=False)
+halp.add_field(name="`%removeBotPerms <role>`",
+                value="Removes the permission for a role to use the admin commands of the bot ", inline=False)
 
 # status of mc server in nickname and activity
 async def status_update():
@@ -74,36 +89,30 @@ async def on_ready():
 # the help command
 @bot.command(pass_context=True, aliases=['Help'])
 async def help(ctx):
-    halp = discord.Embed(title='Help Commands', color=discord.Color.blue())
-    halp.add_field(name="`%help`", value="Show a list of all commands", inline=False)
-    halp.add_field(name="`%serverStatus <address> [port=25565]`", value="Displays the status of a server", inline=False)
-    halp.add_field(name="`%status`", value="Displays the status of the default server", inline=False)
-    halp.add_field(name="`%playersOnline`", value="Lists the players online on the default server", inline=False)
-    halp.add_field(name="`%setServer <address> [port=25565]`", value="Sets the default server", inline=False)
-    halp.add_field(name="`%removeServer`", value="Sets the default server to none", inline=False)
-    halp.add_field(name="`%toggleNick`", value="Toggles whether the nick of the bot will become online and offline",
-                   inline=False)
-    halp.add_field(name="`%listBotPerms`", value="Lists roles that have permissions to use the bot", inline=False)
-    halp.add_field(name="`%addBotPerms <role>`",
-                   value="Allows a role the permissions to use the admin commands of the bot", inline=False)
-    halp.add_field(name="`%removeBotPerms <role>`",
-                   value="Removes the permission for a role to use the admin commands of the bot ", inline=False)
     await ctx.channel.send(embed=halp)
 
 
 # status of the mc server
 @bot.command(pass_context=True, aliases=['Status'])
-async def status(ctx):
-    if ctx.guild.id in mc_servers:
+async def status(ctx, address=None, port=None):
+    if ctx.guild.id in mc_servers and address is None and port is None:
         try:
             status_server = mc_servers[ctx.guild.id][2].status()
             await ctx.channel.send('`{}` is online with {}/{} players'.format(mc_servers[ctx.guild.id][0],
-                                                                              status_server.players.online,
-                                                                              status_server.players.max))
+                                                status_server.players.online, status_server.players.max))
         except:
             await ctx.channel.send('`{}` is offline'.format(mc_servers[ctx.guild.id][0]))
-    else:
+    elif address is None and port is None:
         await ctx.channel.send(server_not_set)
+    else:
+        server = MinecraftServer.lookup('{}:{}'.format(address, port))
+        try:
+            status_server = server.status()
+            await ctx.channel.send('`{}` is online with {}/{} players'.format(address, status_server.players.online,
+                                                                                       status_server.players.max))
+        except:
+            await ctx.channel.send('`{}` is offline'.format(address))
+
 
 
 # set the default minecraft server for the guild
@@ -135,18 +144,6 @@ async def removeServer(ctx):
             await ctx.channel.send(server_not_set)
     else:
         await ctx.channel.send(no_perm)
-
-
-# status of mc server of user choice
-@bot.command(pass_context=True, aliases=['serverstatus', 'ServerStatus', 'Serverstatus'])
-async def serverStatus(ctx, address, port='25565'):
-    server = MinecraftServer.lookup('{}:{}'.format(address, port))
-    try:
-        status_server = server.status()
-        await ctx.channel.send('`{}` is online with {}/{} players'.format(address, status_server.players.online,
-                                                                          status_server.players.max))
-    except:
-        await ctx.channel.send('`{}` is offline'.format(address))
 
 
 # add a role that can use the bot
@@ -204,12 +201,12 @@ async def listBotPerms(ctx):
 
 # list the players online up to 30 players
 @bot.command(pass_context=True, aliases=['PlayersOnline', 'playersonline', 'Playersonline'])
-async def playersOnline(ctx):
-    if ctx.guild.id in mc_servers:
+async def playersOnline(ctx, address=None, port=None):
+    if ctx.guild.id in mc_servers and address is None and port is None:
         try:
             server_status = mc_servers[ctx.guild.id][2].status()
         except:
-            await ctx.channel.send('The server is not online')
+            await ctx.channel.send(f'{mc_servers[ctx.guild.id][0]} is offline')
             return
         if server_status.players.online > 0:
             players_online = discord.Embed(title='Players Online', color=discord.Color.blue())
@@ -220,15 +217,32 @@ async def playersOnline(ctx):
             for player in online_players:
                 players_str += '\n' + player
             players_online.add_field(name='{}/{} Players on {}'.format(server_status.players.online,
-                                                                       server_status.players.max,
-                                                                       mc_servers[ctx.guild.id][0]),
-                                     value=players_str)
-
+                                    server_status.players.max, mc_servers[ctx.guild.id][0]), value=players_str)
             await ctx.channel.send(embed=players_online)
         else:
             await ctx.channel.send(f'There is nobody online on {mc_servers[ctx.guild.id][0]}')
-    else:
+    elif address is None and port is None:
         await ctx.channel.send(server_not_set)
+    else:
+        server = MinecraftServer.lookup('{}:{}'.format(address, port))
+        try:
+           server_status = server.status()
+        except:
+            await ctx.channel.send('`{}` is offline'.format(address))
+            return
+        if server_status.players.online > 0:
+            players_online = discord.Embed(title='Players Online', color=discord.Color.blue())
+            players_str = ''
+            online_players = [user['name'] for user in server_status.raw['players']['sample']]
+            if len(online_players) > 30:
+                online_players = online_players[:29]
+            for player in online_players:
+                players_str += '\n' + player
+            players_online.add_field(name='{}/{} Players on {}'.format(server_status.players.online,
+                                    server_status.players.max, mc_servers[ctx.guild.id][0]), value=players_str)
+            await ctx.channel.send(embed=players_online)
+        else:
+            await ctx.channel.send(f'There is nobody online on {mc_servers[ctx.guild.id][0]}')
 
 
 # toggles the nick function for the guild
